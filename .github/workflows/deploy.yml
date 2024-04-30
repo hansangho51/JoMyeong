@@ -1,0 +1,53 @@
+name: Deploy # Workflow 이름
+on: # Event 감지
+  push:
+    branches:
+      - develop # 해당 브랜치의 푸쉬가 일어날 때 CI/CD를 진행하겠다는 뜻
+jobs:
+  build:
+    runs-on: Amazon Linux
+    steps:
+      # - name: Checkout source code. # Repo checkout
+      #   uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22.x"
+
+      - name: Check Node v # Node v 확인
+        run: node -v
+
+      - name: Install Dependencies # 의존 파일 설치
+        run: npm install --legacy-peer-deps --frozen-lockfile
+
+      - name: Build # React Build
+        run: yarn build
+        env:
+          CI: ""
+
+      - name: zip create
+        # zip 파일을 만듭니다(파일명은 자유, 대신 아래 workflow에 적을 파일명과 동일하게 맞춰주세요).
+        run: zip -qq -r ./JoMyeong.zip .
+        shell: bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{secrets.AKIAVRUVWZZQZAASETVU}}
+          aws-secret-access-key: ${{secrets.4bVs5iEkw7CmFhLQEqxUlsJQSXVV3Ar5LQ8E3ZRE}}
+          aws-region: ${{secrets.ap-northeast-2}}
+
+      - name: Upload to S3 # Upload build file to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{secrets.AKIAVRUVWZZQZAASETVU}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.4bVs5iEkw7CmFhLQEqxUlsJQSXVV3Ar5LQ8E3ZRE}}
+        run: |
+          aws s3 cp --region ap-northeast-2 ./JoMyeong.zip s3://arn:aws:s3:::jomyeong-bucket/build-app.zip
+
+      - name: Deploy # Deploy to EC2
+        run: aws deploy create-deployment
+          --application-name code-deploy-jomyeong
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name code-deploy-group
+          --s3-location bucket=arn:aws:s3:::jomyeong-bucket,key=JoMyeong.zip,bundleType=zip
