@@ -5,7 +5,7 @@ on: # Event 감지
       - main # 해당 브랜치의 푸쉬가 일어날 때 CI/CD를 진행하겠다는 뜻
 jobs:
   build:
-    runs-on: Amazon Linux
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout source code. # Repo checkout
         uses: actions/checkout@v2
@@ -42,7 +42,7 @@ jobs:
 
       - name: Deploy # Deploy to EC2
         run: aws deploy create-deployment
-          --application-name code-deploy-jomyeong
+          --application-name jomyeongcicd
           --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name code-deploy-group
+          --deployment-group-name jomyeong-cicd-group
           --s3-location bucket=jomyeong-bucket,key=JoMyeong.zip,bundleType=zip
