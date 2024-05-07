@@ -5,19 +5,19 @@ on: # Event 감지
       - main # 해당 브랜치의 푸쉬가 일어날 때 CI/CD를 진행하겠다는 뜻
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu 24.04
     steps:
       - name: Checkout source code. # Repo checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1
 
       - name: Check Node v # Node v 확인
         run: node -v
 
       - name: Install Dependencies # 의존 파일 설치
-        run: yum install --frozen-lockfile
+        run: yarn install --frozen-lockfile
 
       - name: Build # React Build
-        run: npm run build
+        run: yarn build
         env:
           CI: ""
 
