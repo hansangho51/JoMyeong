@@ -17,7 +17,7 @@ jobs:
         run: yum install --frozen-lockfile
 
       - name: Build # React Build
-        run: yum build
+        run: npm run build
         env:
           CI: ""
 
