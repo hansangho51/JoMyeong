@@ -38,11 +38,11 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 cp --region ap-southeast-2 ./JoMyeong.zip s3://jomyeong-bucket/JoMyeong.zip
+          aws s3 cp --region ap-southeast-2 ./JoMyeong.zip s3://jomyeongbucket/JoMyeong.zip
 
       - name: Deploy # Deploy to EC2
         run: aws deploy create-deployment
-          --application-name jomyeongcicd
+          --application-name JoMyeongCD
           --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name jomyeong-cicd-group
-          --s3-location bucket=jomyeong-bucket,key=JoMyeong.zip,bundleType=zip
+          --deployment-group-name JoMyeong-cicd-group
+          --s3-location bucket=jomyeongbucket,key=JoMyeong.zip,bundleType=zip
